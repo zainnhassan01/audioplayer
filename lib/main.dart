@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:musicplayer/screens/home.dart';
+import 'screens/home.dart';
 import 'const/methods.dart';
 void main() {
   runApp(const MyApp());

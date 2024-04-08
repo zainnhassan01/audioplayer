@@ -3,13 +3,15 @@ import 'package:get/get.dart';
 import 'package:musicplayer/const/colors.dart';
 import 'package:musicplayer/const/methods.dart';
 import 'package:musicplayer/controller/playerController.dart';
+import 'package:musicplayer/screens/player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
   @override
   Widget build(BuildContext context) {
-    // var controller = Get.put(PlayerController());
+    var controller = Get.put(PlayerController());
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -37,7 +39,8 @@ class HomePage extends StatelessWidget {
               child: Container(
                 height: h * 0.17,
                 width: w * 0.95,
-                decoration: BoxDecoration(gradient: MyColors.gradient2),
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                decoration: BoxDecoration(gradient: MyColors.gradient2,borderRadius: BorderRadius.circular(70)),
                 child: InkWell(
                   child: Row(
                     children: [
@@ -78,18 +81,14 @@ class HomePage extends StatelessWidget {
                       SizedBox(
                         width: w * 0.04,
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
                           Icon(
-                            Icons.play_arrow,
-                            size: w* 0.1,
+                            Icons.play_circle_fill_sharp,
+                            color: MyColors.backgroundColor,
+                            size: w * 0.1,
                           ),
                           SizedBox(
                             height: h * 0.02,
                           ),
-                        ],
-                      )
                     ],
                   ),
                 ),
@@ -97,44 +96,86 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-              height: h * 0.66,
-              // child: FutureBuilder(
-              //   future: controller.Onaudioquery.querySongs(
-              //       orderType: OrderType.ASC_OR_SMALLER,
-              //       sortType: null,
-              //       ignoreCase: true,
-              //       uriType: UriType.EXTERNAL),
-              //   builder: (context, snapshot) => 
-                // snapshot.data == null
-                //     ? CircularProgressIndicator.adaptive()
-                //     : snapshot.data!.isEmpty
-                //         ? Center(
-                //             child: Text("No Songs Found."),
-                //           )
-                //         : 
-                child:        ListView.builder(
-                            itemCount: 20,
-                            itemBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Card(
-                                color: MyColors.tileColor,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30)),
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundImage: AssetImage(
-                                      'assets/images/eminemcover2.jpg',
+            height: h * 0.66,
+            child: FutureBuilder<List<SongModel>>(
+                future: controller.Onaudioquery.querySongs(
+                    orderType: OrderType.ASC_OR_SMALLER,
+                    sortType: null,
+                    ignoreCase: true,
+                    uriType: UriType.EXTERNAL),
+                builder: (context, snapshot) {
+                  return snapshot.data == null
+                      ? CircularProgressIndicator.adaptive()
+                      : snapshot.data!.isEmpty
+                          ? Center(
+                              child: Text("No Songs Found."),
+                            )
+                          : ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.all(2),
+                                child: Obx(
+                                  () => Card(
+                                    color: controller.playIndex == index
+                                        ? MyColors.selectedList
+                                        : MyColors.titleColor,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30)),
+                                    child: Obx(
+                                      () => ListTile(
+                                        leading: QueryArtworkWidget(
+                                          id: snapshot.data![index].id,
+                                          type: ArtworkType.AUDIO,
+                                          nullArtworkWidget:
+                                              Icon(Icons.music_note),
+                                        ),
+                                        title:
+                                            Text(snapshot.data![index].title),
+                                        subtitle:
+                                            Text(snapshot.data![index].artist!),
+                                        trailing: controller.playIndex ==
+                                                    index &&
+                                                controller.isPlaying.value ==
+                                                    true
+                                            ? Icon(Icons.play_arrow_sharp,
+                                                size: 30,
+                                                color: MyColors.color1)
+                                            : Text(DateFormat('mm:ss')
+                                                .format(DateTime
+                                                    .fromMillisecondsSinceEpoch(
+                                                        snapshot.data![index]
+                                                            .duration!,
+                                                        isUtc: false))
+                                                .toString()),
+                                        onTap: () {
+                                          if (controller.playIndex == index) {
+                                            Get.to(
+                                              () => PlayerScreen(
+                                                data: snapshot.data!,
+                                              ),
+                                              transition: Transition.downToUp,
+                                            );
+                                          } else {
+                                            Get.to(
+                                              () => PlayerScreen(
+                                                data: snapshot.data!,
+                                              ),
+                                              transition: Transition.downToUp,
+                                            );
+                                            controller.playSong(
+                                                snapshot.data![index].uri,
+                                                index);
+                                          }
+                                        },
+                                      ),
                                     ),
-                                    radius: 28,
                                   ),
-                                  title: Text("Song Name $index"),
-                                  subtitle: Text("Eminem"),
-                                  trailing: Icon(Icons.music_note),
                                 ),
                               ),
-                            ),
-                          ),
-              ),
+                            );
+                }),
+          ),
         ],
       ),
     );

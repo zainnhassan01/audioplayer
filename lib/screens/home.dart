@@ -6,28 +6,54 @@ import 'package:musicplayer/controller/playerController.dart';
 import 'package:musicplayer/screens/player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:intl/intl.dart';
+import 'package:musicplayer/controller/searchfunctionality.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var controller = Get.find<PlayerController>();
+
+  initializeList() async {
+    await controller.initializeList().then((value) => {
+    for (int i=0;i<controller.songdata.length;i++) {
+      controller.searchIndex.add(SongModelClass(indexId: i,id:controller.songdata[i].id, artist: controller.songdata[i].artist, displayNameWOExt: controller.songdata[i].displayNameWOExt,)),
+    }
+    })  ;
+  }
+
+  @override
+  void initState() {
+    initializeList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(PlayerController());
-    final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
+    final w = Get.width;
+    final h = Get.height;
     return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
+      backgroundColor: MyColors.baseColor,
       appBar: AppBar(
+        backgroundColor: MyColors.accentColor,
         leading: IconButton(onPressed: () {}, icon: Icon(Icons.sort_rounded)),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(gradient: MyColors.appbarColor),
-        ),
-        actions: [IconButton(onPressed: () {}, icon: Icon(Icons.search))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                showSearch(context: context, delegate: CustomSearchDelegate());
+              },
+              icon: Icon(Icons.search))
+        ],
         title: Text(
           "MUSIC PLAYER",
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: MyColors.orange,
+        backgroundColor: MyColors.accentColor,
         onPressed: () {},
         child: Icon(Icons.add),
       ),
@@ -37,31 +63,30 @@ class HomePage extends StatelessWidget {
             padding: EdgeInsets.all(15),
             child: Center(
               child: Container(
-                height: h * 0.17,
-                width: w * 0.95,
+                height: h * 0.12,
+                width: double.maxFinite,
                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                decoration: BoxDecoration(gradient: MyColors.gradient2,borderRadius: BorderRadius.circular(70)),
+                decoration: BoxDecoration(
+                    gradient: MyColors.gradient,
+                    borderRadius: BorderRadius.circular(70)),
                 child: InkWell(
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(
                         width: w * 0.05,
                       ),
                       CircleAvatar(
-                        radius: w * 0.15,
-                        backgroundImage:
-                            AssetImage('assets/images/eminemcover1.jpg'),
+                        radius: w * 0.095,
+                        // child: QueryArtworkWidget(id: controller.data![controller.playIndex.value].id, type: ArtworkType.AUDIO,nullArtworkWidget: Icon(Icons.music_note_sharp),),
                       ),
                       SizedBox(
                         width: w * 0.05,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            height: h * 0.04,
-                          ),
                           Text(
                             "Beautiful".toUpperCase(),
                             style: Method.textStyle(
@@ -79,105 +104,106 @@ class HomePage extends StatelessWidget {
                         ],
                       ),
                       SizedBox(
-                        width: w * 0.04,
+                        width: w * 0.1,
                       ),
-                          Icon(
-                            Icons.play_circle_fill_sharp,
-                            color: MyColors.backgroundColor,
-                            size: w * 0.1,
-                          ),
-                          SizedBox(
-                            height: h * 0.02,
-                          ),
+                      Icon(
+                        Icons.play_circle_fill_sharp,
+                        color: MyColors.whiteColor,
+                        size: w * 0.1,
+                      ),
+                      SizedBox(
+                        height: h * 0.02,
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-          Container(
-            height: h * 0.66,
-            child: FutureBuilder<List<SongModel>>(
-                future: controller.Onaudioquery.querySongs(
-                    orderType: OrderType.ASC_OR_SMALLER,
-                    sortType: null,
-                    ignoreCase: true,
-                    uriType: UriType.EXTERNAL),
-                builder: (context, snapshot) {
-                  return snapshot.data == null
-                      ? CircularProgressIndicator.adaptive()
-                      : snapshot.data!.isEmpty
-                          ? Center(
-                              child: Text("No Songs Found."),
-                            )
-                          : ListView.builder(
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.all(2),
+          Obx(() => Container(
+            height: h * 0.73,
+            child: 
+                 controller.songdata.isEmpty
+                    ? Center(
+                        child: Text("No Songs Found.",style: TextStyle(color: Colors.white,fontSize: 16),),
+                      )
+                    :  ListView.builder(
+                      itemCount: controller.songdata.length,
+                      itemBuilder: (context, index) {
+                          return  Padding(
+                            padding: const EdgeInsets.all(2),
+                            child: Obx(
+                              () => Card(
+                                color: controller.playIndex == index
+                                    ? MyColors.additionalColor
+                                    : MyColors.selectedList,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30)),
                                 child: Obx(
-                                  () => Card(
-                                    color: controller.playIndex == index
-                                        ? MyColors.selectedList
-                                        : MyColors.titleColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    child: Obx(
-                                      () => ListTile(
-                                        leading: QueryArtworkWidget(
-                                          id: snapshot.data![index].id,
-                                          type: ArtworkType.AUDIO,
-                                          nullArtworkWidget:
-                                              Icon(Icons.music_note),
-                                        ),
-                                        title:
-                                            Text(snapshot.data![index].title),
-                                        subtitle:
-                                            Text(snapshot.data![index].artist!),
-                                        trailing: controller.playIndex ==
-                                                    index &&
-                                                controller.isPlaying.value ==
-                                                    true
-                                            ? Icon(Icons.play_arrow_sharp,
-                                                size: 30,
-                                                color: MyColors.color1)
-                                            : Text(DateFormat('mm:ss')
-                                                .format(DateTime
-                                                    .fromMillisecondsSinceEpoch(
-                                                        snapshot.data![index]
-                                                            .duration!,
-                                                        isUtc: false))
-                                                .toString()),
-                                        onTap: () {
-                                          if (controller.playIndex == index) {
-                                            Get.to(
-                                              () => PlayerScreen(
-                                                data: snapshot.data!,
-                                              ),
-                                              transition: Transition.downToUp,
-                                            );
-                                          } else {
-                                            Get.to(
-                                              () => PlayerScreen(
-                                                data: snapshot.data!,
-                                              ),
-                                              transition: Transition.downToUp,
-                                            );
-                                            controller.playSong(
-                                                snapshot.data![index].uri,
-                                                index);
-                                          }
-                                        },
-                                      ),
+                                  () => ListTile(
+                                    leading: QueryArtworkWidget(
+                                      id: controller.songdata[index].id,
+                                      type: ArtworkType.AUDIO,
+                                      nullArtworkWidget: Icon(Icons.music_note),
                                     ),
+                                    title:
+                                        Text(controller.songdata[index].title),
+                                    subtitle:
+                                        Text(controller.songdata[index].artist!),
+                                    trailing: controller.playIndex == index &&
+                                            controller.isPlaying.value == true
+                                        ? Icon(Icons.play_arrow_sharp,
+                                            size: 30, color: Colors.black)
+                                        : Text(DateFormat('mm:ss')
+                                            .format(DateTime
+                                                .fromMillisecondsSinceEpoch(
+                                                    controller.songdata[index]
+                                                        .duration!,
+                                                    isUtc: false))
+                                            .toString()),
+                                    onTap: () {
+                                      if (controller.playIndex == index) {
+                                        Get.to(
+                                          () => PlayerScreen(
+                                            data: controller.songdata,
+                                          ),
+                                          transition: Transition.downToUp,
+                                        );
+                                      } else {
+                                        Get.to(
+                                          () => PlayerScreen(
+                                            data: controller.songdata,
+                                          ),
+                                          transition: Transition.downToUp,
+                                        );
+                                        controller.playSong(
+                                            controller.songdata[index].uri,
+                                            index);
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
-                            );
-                }),
-          ),
+                            ),
+                          );
+                        }),
+                    ),),
         ],
       ),
     );
   }
 }
+
+
+// old list view for other projects
+// ListView(
+//       children: List.generate(matchSuggestions.length, (index) {
+//         return Card(
+//             child: ListTile(
+//                 onTap: () async {
+//                   query = matchSuggestions[index];
+//                 },
+//                 title: Text(matchSuggestions[index],
+//                     style: TextStyle(fontSize: 20))));
+//       }),
+//     );

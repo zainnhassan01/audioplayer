@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:musicplayer/const/colors.dart';
 import 'package:musicplayer/const/methods.dart';
 import 'package:musicplayer/controller/playerController.dart';
-import 'package:musicplayer/screens/home.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class PlayerScreen extends StatelessWidget {
@@ -15,7 +14,7 @@ class PlayerScreen extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: MyColors.backgroundColor,
+      backgroundColor: MyColors.baseColor,
       body: SafeArea(
         child: Obx(() => Column(children: [
             Row(
@@ -60,7 +59,7 @@ class PlayerScreen extends StatelessWidget {
                 height: h * 0.35,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                    gradient: MyColors.gradient2,
+                    gradient: MyColors.player,
                     shape: BoxShape.rectangle,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(60))),
@@ -114,7 +113,7 @@ class PlayerScreen extends StatelessWidget {
                             min: Duration(seconds: 0).inSeconds.toDouble(),
                              value: controller.current.value,
                              thumbColor: Colors.white,
-                             activeColor: MyColors.orange,
+                             activeColor: MyColors.accentColor,
                              inactiveColor: Colors.grey[400],
                              onChanged: (item) {
                               controller.changeDurationToSeconds(item.toInt());
@@ -139,9 +138,10 @@ class PlayerScreen extends StatelessWidget {
                           ),
                           Obx(
                             () => CircleAvatar(
+                              backgroundColor: Colors.grey[900],
                                 radius: 40,
                                 child: Transform.scale(
-                                    scale: 1.3,
+                                    scale: 1.5,
                                     alignment: Alignment.center,
                                     child: IconButton(
                                       onPressed: () {

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:musicplayer/controller/playerController.dart';
 import 'screens/home.dart';
 import 'const/methods.dart';
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp( MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final controller = Get.put(PlayerController());
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Music Player',
       theme: ThemeData(
-        colorScheme: ColorScheme.dark(),
         appBarTheme: AppBarTheme(
             elevation: 0,
             centerTitle: true,

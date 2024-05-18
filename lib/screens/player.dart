@@ -16,7 +16,8 @@ class PlayerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: MyColors.baseColor,
       body: SafeArea(
-        child: Obx(() => Column(children: [
+        child: Obx(
+          () => Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -24,17 +25,18 @@ class PlayerScreen extends StatelessWidget {
                   onPressed: () {
                     Get.back();
                   },
-                  icon: Icon(Icons.arrow_back,
-                  color: Colors.white,
-                  size: 27,
-                ),),
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 27,
+                  ),
+                ),
               ],
             ),
             GestureDetector(
               onVerticalDragEnd: (details) {
-                if(details.primaryVelocity! > 0)
-               Get.back();
-              },  
+                if (details.primaryVelocity! > 0) Get.back();
+              },
               child: Container(
                 height: h * 0.6,
                 width: w * 0.99,
@@ -73,7 +75,11 @@ class PlayerScreen extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         style: TextStyle(
-                            fontSize: data[controller.playIndex.value].title.length > 30 ? 20.0 : 25.0,
+                            fontSize:
+                                data[controller.playIndex.value].title.length >
+                                        30
+                                    ? 20.0
+                                    : 25.0,
                             color: Colors.white,
                             fontWeight: FontWeight.bold),
                       ),
@@ -107,45 +113,49 @@ class PlayerScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                       Obx(
+                      Obx(
                         () => Slider(
                             max: controller.max.value,
                             min: Duration(seconds: 0).inSeconds.toDouble(),
-                             value: controller.current.value,
-                             thumbColor: Colors.white,
-                             activeColor: MyColors.accentColor,
-                             inactiveColor: Colors.grey[400],
-                             onChanged: (item) {
+                            value: controller.current.value,
+                            thumbColor: Colors.white,
+                            activeColor: MyColors.accentColor,
+                            inactiveColor: Colors.grey[400],
+                            onChanged: (item) {
                               controller.changeDurationToSeconds(item.toInt());
                               item = item;
-                             }),
-                       ),
+                            }),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           IconButton(
                             onPressed: () {
-                              if(controller.playIndex.value - 1 < 0){
-                              } else{
-                              controller.playSong(data[controller.playIndex.value - 1].uri, controller.playIndex.value - 1);
-                              print(controller.playIndex.value);
+                              if (controller.playIndex.value - 1 < 0) {
+                              } else {
+                                controller.playSong(
+                                    data[controller.playIndex.value - 1].uri,
+                                    controller.playIndex.value - 1);
+                                print(controller.playIndex.value);
                               }
                             },
-                            icon: Icon(Icons.skip_previous_sharp,
-                            size: 50,
-                            color: MyColors.backgroundColor,
+                            icon: Icon(
+                              Icons.skip_previous_sharp,
+                              size: 50,
+                              color: MyColors.backgroundColor,
                             ),
                           ),
                           Obx(
                             () => CircleAvatar(
-                              backgroundColor: Colors.grey[900],
+                                backgroundColor: Colors.grey[900],
                                 radius: 40,
                                 child: Transform.scale(
                                     scale: 1.5,
                                     alignment: Alignment.center,
                                     child: IconButton(
                                       onPressed: () {
-                                        if (controller.isPlaying.value == true) {
+                                        if (controller.isPlaying.value ==
+                                            true) {
                                           controller.isPlaying(false);
                                           controller.player.pause();
                                         } else {
@@ -168,13 +178,17 @@ class PlayerScreen extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {
-                              if(controller.playIndex.value + 1 < data.length){
-                                controller.playSong(data[controller.playIndex.value + 1].uri, controller.playIndex.value + 1);
-                              } 
+                              if (controller.playIndex.value + 1 <
+                                  data.length) {
+                                controller.playSong(
+                                    data[controller.playIndex.value + 1].uri,
+                                    controller.playIndex.value + 1);
+                              }
                             },
-                            icon: Icon(Icons.skip_next_sharp,
-                            size: 50,
-                            color: MyColors.backgroundColor,
+                            icon: Icon(
+                              Icons.skip_next_sharp,
+                              size: 50,
+                              color: MyColors.backgroundColor,
                             ),
                           ),
                         ],

@@ -74,22 +74,17 @@ class CustomSearchDelegate extends SearchDelegate {
         matchSuggestions.add(song);
       }
     }
-    print("length ${matchSuggestions.length}");
     return ListView(
       children: List.generate(matchSuggestions.length, (index) {
         return Card(
           child: ListTile(
-            onTap: () {
-              query = matchSuggestions[index].displayNameWOExt;
+            onTap: () async {
               if (MediaQuery.of(context).viewInsets.bottom != 0) {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
-                Future.delayed(Duration(milliseconds: 500));
-                playSearchedSong(matchSuggestions, index);
-                query = "";
-              } else {
-                playSearchedSong(matchSuggestions, index);
-                query = "";
               }
+                await Future.delayed(Duration(milliseconds: 100));
+                playSearchedSong(matchSuggestions, index);
+                query = "";
             },
             leading: QueryArtworkWidget(
               id: matchSuggestions[index].id,

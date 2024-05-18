@@ -3,18 +3,24 @@ import 'package:just_audio/just_audio.dart';
 import 'package:musicplayer/const/methods.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayerController extends GetxController {
   final Onaudioquery = OnAudioQuery();
   final player = AudioPlayer();
+  // final _preferences = SharedPreferences.getInstance();
   RxInt playIndex = 0.obs;
   RxBool isPlaying = false.obs;
   var duration = ''.obs;
   var position = ''.obs;
   var max = 0.0.obs;
   var current = 0.0.obs;
+  RxMap<String,dynamic> toJSON = <String,dynamic>{}.obs; 
   RxList<SongModelClass> searchIndex = <SongModelClass>[].obs;
   RxList<SongModel> songdata = <SongModel>[].obs;
+  PlayerController() {
+    playIndex.value = 0; // Initialize playIndex to 0
+  }
   @override
   void onInit() {
     checkPermissions();
@@ -36,7 +42,17 @@ class PlayerController extends GetxController {
         ignoreCase: true,
         uriType: UriType.EXTERNAL);
   }
-
+  // sharedPreferencesData(String? uri, int index) {
+  //   String? songUri = uri;
+  //   int songIndex = index;
+  //   player.durationStream.listen((event) {
+  //     duration.value = event.toString().split('.')[0];});
+  //   toJSON.value = {
+  //       'songUri' : songUri,
+  //       'songIndex': songIndex,
+  //       'duration': duration.value
+  //     };
+  //   }
   //to play song
   playSong(String? uri, int index) {
     playIndex.value = index;

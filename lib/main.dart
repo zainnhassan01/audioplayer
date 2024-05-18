@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Music Player',
+      title: 'Audio Player',
       theme: ThemeData(
         appBarTheme: AppBarTheme(
             elevation: 0,

@@ -1,16 +1,9 @@
-# musicplayer
+# audioplayer
 
-A new Flutter project.
+A flutter project for Audio Player to run audio files saved in your device 
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
+This project is developed to access all the audio files saved on your smartphone.
+Firstly, user allows the application to access the storage, after that all the audio files are displayed on home screen. User can play the file by simply tapping on it. Search functionality allows user to search for desired audio file through linear search. 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

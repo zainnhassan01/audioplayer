@@ -9,5 +9,5 @@ Firstly, user allows the application to access the storage, after that all the a
 
 
 
-https://github.com/zainnhassan01/audioplayer/assets/108609238/b31d0d5e-08bb-4839-839e-4d3fba395a37
+https://github.com/zainnhassan01/audioplayer/assets/108609238/f2cd1f66-530c-4088-b06d-ec8caace7e46
 

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicplayer/const/methods.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -8,16 +9,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PlayerController extends GetxController {
   final Onaudioquery = OnAudioQuery();
   final player = AudioPlayer();
+  RxString songtitle = "".obs; //for play button in lists
+  RxString songauthor = "".obs;
+  RxInt songid = 0.obs;
   // final _preferences = SharedPreferences.getInstance();
   RxInt playIndex = 0.obs;
   RxBool isPlaying = false.obs;
+  RxInt selectedIndex = 0.obs;
   var duration = ''.obs;
   var position = ''.obs;
   var max = 0.0.obs;
   var current = 0.0.obs;
   RxMap<String,dynamic> toJSON = <String,dynamic>{}.obs; 
   RxList<SongModelClass> searchIndex = <SongModelClass>[].obs;
-  RxList<SongModel> songdata = <SongModel>[].obs;
+  RxList<SongModel> allsongdata = <SongModel>[].obs;
+  RxList<SongModel> recordings = <SongModel>[].obs;
+  RxList<SongModel> music = <SongModel>[].obs;
   PlayerController() {
     playIndex.value = 0; // Initialize playIndex to 0
   }
@@ -36,7 +43,7 @@ class PlayerController extends GetxController {
   }
 
   Future initializeList() async {
-    songdata.value = await Onaudioquery.querySongs(
+    allsongdata.value = await Onaudioquery.querySongs(
         orderType: OrderType.ASC_OR_SMALLER,
         sortType: null,
         ignoreCase: true,

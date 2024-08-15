@@ -6,9 +6,17 @@ import 'package:musicplayer/const/methods.dart';
 import 'package:musicplayer/controller/playerController.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-class PlayerScreen extends StatelessWidget {
+class PlayerScreen extends StatefulWidget {
   PlayerScreen({super.key, required this.data});
   List<SongModel> data;
+
+  @override
+  State<PlayerScreen> createState() => _PlayerScreenState();
+}
+
+class _PlayerScreenState extends State<PlayerScreen> {
+  
+    bool isFavorited = false;
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PlayerController>();
@@ -19,179 +27,204 @@ class PlayerScreen extends StatelessWidget {
       decoration: BoxDecoration(gradient: MyColors.background),
       child: GestureDetector(
         onVerticalDragEnd: (details) {
-          if(details.primaryVelocity! > 0) Get.back();
+          if (details.primaryVelocity! > 0) Get.back();
         },
         child: Scaffold(
-            backgroundColor: MyColors.baseColor,
-            appBar: AppBar(
-              leading: IconButton(
-                onPressed: () {
-                  Get.back();
-                },
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 27,
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+                size: 27,
+              ),
+            ),
+            backgroundColor: Colors.transparent,
+            title: Text(
+              "Now Playing",
+              style: GoogleFonts.poppins(color: Colors.white),
+            ),
+            // actions: [
+            //   IconButton(
+            //     onPressed: () {
+            //       setState(() {
+            //         isFavorited = !isFavorited;
+            //       });
+            //     },
+            //     icon: Icon(
+            //       Icons.favorite,
+            //       size: 27,
+            //       color: isFavorited ? Colors.red : Colors.white,
+            //     ),
+            //     tooltip: isFavorited ? 'Unfavorite' : 'Favorite',
+            //   ),
+            // ],
+          ),
+          body: Column(children: [
+            Padding(
+                padding: const EdgeInsets.all(35.0),
+                child: Container(
+                  height: h * 0.55,
+                  width: double.infinity,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                  ),
+                  child: Obx(
+                    () => QueryArtworkWidget(
+                      // artworkBorder: BorderRadius.circular(500),
+                      size: 250,
+                      quality: 100,
+                      artworkQuality: FilterQuality.high,
+                      id: widget.data[controller.playIndex.value].id,
+                      type: ArtworkType.AUDIO,
+                      nullArtworkWidget: Icon(
+                        color: Colors.white,
+                        Icons.music_note_sharp,
+                        size: 80,
+                      ),
+                    ),
+                  ),
+                )),
+            Obx(
+              () => Text(widget.data[controller.playIndex.value].title,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  maxLines: 1,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    color: Colors.white,
+                  )),
+            ),
+            Obx(
+              () => Text(widget.data[controller.playIndex.value].artist!,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  maxLines: 1,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.white,
+                  )),
+            ),
+            Obx(
+              () => Slider(
+                  max: controller.max.value,
+                  min: Duration(seconds: 0).inSeconds.toDouble(),
+                  value: controller.current.value,
+                  thumbColor: MyColors.background1,
+                  activeColor: MyColors.background1,
+                  inactiveColor: Colors.grey[400],
+                  onChanged: (item) {
+                    controller.changeDurationToSeconds(item.toInt());
+                    item = item;
+                  }),
+            ),
+            Obx(
+              () => Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(controller.position.value,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.white,
+                          )),
+                      Text(controller.duration.value,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
                 ),
               ),
-              backgroundColor: Colors.transparent,
-              title: Text(
-                "Now Playing",
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-              actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.favorite,size: 27,color: Colors.white,),),            
-              ],
             ),
-            body: Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Padding(
-                    padding: const EdgeInsets.all(35.0),
-                    child: Container(
-                      height: h * 0.55,
-                      width: double.infinity,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: Obx(() => QueryArtworkWidget(
-                          // artworkBorder: BorderRadius.circular(500),
-                          size: 250,
-                          quality: 100,
-                          artworkQuality: FilterQuality.high,
-                          id: data[controller.playIndex.value].id,
-                          type: ArtworkType.AUDIO,
-                          nullArtworkWidget: Icon(
-                            Icons.music_note_sharp,
-                            size: 80,
-                          ),
-                        ),
-                      ),
-                    )),
-                     Obx(() => Text(
-                            data[controller.playIndex.value].title,
-                            textAlign: TextAlign.center,
-                            softWrap: true,
-                            maxLines: 1,
-                            style: GoogleFonts.poppins(
-                                fontSize: 20,
-                                color: Colors.white,
-                            )
-                          ),
-                     ),
-                        Obx(() => Text(
-                            data[controller.playIndex.value].artist!,
-                            textAlign: TextAlign.center,
-                            softWrap: true,
-                            maxLines: 1,
-                            style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.white,
-                            )
-                          ),
-                        ),
-                        Obx(
-                          () => Slider(
-                              max: controller.max.value,
-                              min: Duration(seconds: 0).inSeconds.toDouble(),
-                              value: controller.current.value,
-                              thumbColor: MyColors.background1,
-                              activeColor: MyColors.background1,
-                              inactiveColor: Colors.grey[400],
-                              onChanged: (item) {
-                                controller.changeDurationToSeconds(item.toInt());
-                                item = item;
-                              }),
-                        ),
-                         Obx(
-                          () => Padding(
-                            padding: const EdgeInsets.fromLTRB(20,0,20,0),
-                            child: Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(controller.position.value,
-                                       style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.white,
-                            )),
-                                  Text(controller.duration.value,
-                                       style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.white,
-                            )),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                if (controller.playIndex.value - 1 < 0) {
-                                } else {
-                                  controller.playSong(
-                                      data[controller.playIndex.value - 1].uri,
-                                      controller.playIndex.value - 1);
-                                  print(controller.playIndex.value);
-                                }
-                              },
-                              icon: Icon(
-                                Icons.skip_previous_sharp,
-                                size: 50,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Obx(
-                              () => CircleAvatar(
-                                  backgroundColor: Colors.black,
-                                  radius: 35,
-                                  child: Transform.scale(
-                                      scale: 1.5,
-                                      alignment: Alignment.center,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          if (controller.isPlaying.value ==
-                                              true) {
-                                            controller.isPlaying(false);
-                                            controller.player.pause();
-                                          } else {
-                                            controller.isPlaying(true);
-                                            controller.player.play();
-                                          }
-                                        },
-                                        icon: controller.isPlaying.value
-                                            ? Icon(
-                                                Icons.pause,
-                                                size: 25,
-                                                color: Colors.white,
-                                              )
-                                            : Icon(
-                                                Icons.play_arrow_sharp,
-                                                size: 25,
-                                                color: Colors.white,
-                                              ),
-                                      ))),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                if (controller.playIndex.value + 1 <
-                                    data.length) {
-                                  controller.playSong(
-                                      data[controller.playIndex.value + 1].uri,
-                                      controller.playIndex.value + 1);
-                                }
-                              },
-                              icon: Icon(
-                                Icons.skip_next_sharp,
-                                size: 50,
-                                color: Colors.black,
-                              ),
-                            ),
+                IconButton(
+                  onPressed: () {
+                    if (controller.playIndex.value - 1 < 0) {
+                    } else {
+                      controller.songtitle.value =
+                          widget.data[controller.playIndex.value - 1].title;
+                      controller.songauthor.value =
+                          widget.data[controller.playIndex.value - 1].artist ??
+                              "Artist";
+                      controller.songid.value =
+                          widget.data[controller.playIndex.value - 1].id;
+                      controller.playSong(
+                          widget.data[controller.playIndex.value - 1].uri,
+                          controller.playIndex.value - 1);
+                      print(controller.playIndex.value);
+                    }
+                  },
+                  icon: Icon(
+                    Icons.skip_previous_sharp,
+                    size: 50,
+                    color: Colors.black,
+                  ),
+                ),
+                Obx(
+                  () => CircleAvatar(
+                      backgroundColor: Colors.black,
+                      radius: 35,
+                      child: Transform.scale(
+                          scale: 1.5,
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () {
+                              if (controller.isPlaying.value == true) {
+                                controller.isPlaying(false);
+                                controller.player.pause();
+                              } else {
+                                controller.isPlaying(true);
+                                controller.player.play();
+                              }
+                            },
+                            icon: controller.isPlaying.value
+                                ? Icon(
+                                    Icons.pause,
+                                    size: 25,
+                                    color: Colors.white,
+                                  )
+                                : Icon(
+                                    Icons.play_arrow_sharp,
+                                    size: 25,
+                                    color: Colors.white,
+                                  ),
+                          ))),
+                ),
+                IconButton(
+                  onPressed: () {
+                    controller.songtitle.value =
+                        widget.data[controller.playIndex.value + 1].title;
+                    controller.songauthor.value =
+                        widget.data[controller.playIndex.value + 1].artist ??
+                            "Artist";
+                    controller.songid.value =
+                        widget.data[controller.playIndex.value + 1].id;
+                    if (controller.playIndex.value + 1 < widget.data.length) {
+                      controller.playSong(
+                          widget.data[controller.playIndex.value + 1].uri,
+                          controller.playIndex.value + 1);
+                    }
+                  },
+                  icon: Icon(
+                    Icons.skip_next_sharp,
+                    size: 50,
+                    color: Colors.black,
+                  ),
+                ),
               ],
-            )]),),
+            )
+          ]),
+        ),
       ),
     );
   }

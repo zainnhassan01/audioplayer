@@ -11,3 +11,7 @@ Firstly, user allows the application to access the storage, after that all the a
 
 
 
+https://github.com/user-attachments/assets/5ce9a570-f163-4005-bb15-b9a7945a8334
+
+
+
